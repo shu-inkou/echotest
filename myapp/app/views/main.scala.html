@@ -1,0 +1,66 @@
+@(title: String)(content: Html)(implicit request: RequestHeader)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <script src="@routes.Assets.at("javascripts/jquery-1.11.1.min.js")"></script>
+        <script src="@routes.Assets.at("javascripts/ajaxzip3.js")" charset="UTF-8"></script>
+        <script src="@routes.Assets.at("javascripts/hello.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/angular.min.js")"></script>
+	    <script type="text/javascript">
+		    var myapp = angular.module('myapp', []);
+			
+			myapp.factory("webSocket", function($rootScope) {
+				//var connection = new WebSocket('ws://echo.websocket.org');
+				var connection = new WebSocket('@routes.Application.socket().webSocketURL()');	
+				
+				// When the connection is open, send some data to the server
+				connection.onopen = function () {
+				  connection.send('Ping'); // Send the message 'Ping' to the server
+				};
+	
+				// Log errors
+				connection.onerror = function (error) {
+				  console.log('WebSocket Error ' + error);
+				};
+	
+				// Log messages from the server
+				connection.onmessage = function (e) {
+					$rootScope.$broadcast("onmessage", {rep : e.data});
+				  console.log('Server: ' + e.data);
+				};
+				
+				return connection;
+			});
+			
+			myapp.controller('myctrl', function ($scope, webSocket) {
+				$scope.serverRes = "waiton";
+			
+			    $scope.send = function () {
+			    	webSocket.send($scope.message);
+			    };
+			    
+			    $scope.showAddress = function () {
+			    	alert($scope.address);
+			    };
+			    
+			    $scope.zip2addr = function () {
+			    	$scope.address = $("#addr11").val();
+			    };
+			    
+			    $scope.$on("onmessage", function(event, args) {
+				     $scope.$apply(function () {
+			            $scope.serverRes = "Server:" + args.rep;
+			        });
+			    });
+			});
+	    </script>
+    </head>
+    <body>
+        @content
+    </body>
+</html>

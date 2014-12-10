@@ -1,0 +1,19 @@
+@(message: String)(implicit request: RequestHeader)
+
+@main("Welcome to Play") {
+    <div ng-app="myapp">
+    <div ng-controller="myctrl">
+    	<div>接続先:@routes.Application.socket().webSocketURL()</div>
+    	<input type="text" ng-model="message"></input>
+        <button ng-click="send()">Send</button>
+        <div>{{serverRes}}</div>
+        <div>
+        	<div>ajaxzip3</div>
+        	<div>郵便番号:<input type="text" name="zip01" size="10" maxlength="8" onKeyUp="AjaxZip3.zip2addr(this,'','addr11','addr11');" ng-blur="zip2addr()"></div>
+        	<div>住所:<input type="text" id="addr11" name="addr11" size="40" ng-model="address"><button ng-click="showAddress()">address</button></div>
+        </div>
+        
+    </div>
+</div>
+
+}
